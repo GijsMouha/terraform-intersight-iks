@@ -28,11 +28,11 @@ data "intersight_kubernetes_version_policy" "this" {
   count = var.versionPolicy.useExisting == true ? 1 : 0
   name  = var.versionPolicy.policyName
 }
-data "intersight_kubernetes_virtual_machine_worker_instance_type" "this" {
+data "intersight_kubernetes_virtual_machine_instance_type" "worker" {
   count = var.worker_instance_type.use_existing == true ? 1 : 0
   name  = var.worker_instance_type.name
 }
-data "intersight_kubernetes_virtual_machine_control_instance_type" "this" {
+data "intersight_kubernetes_virtual_machine_instance_type" "control" {
   count = var.control_instance_type.use_existing == true ? 1 : 0
   name  = var.control_instance_type.name
 }
@@ -237,7 +237,7 @@ module "worker_profile" {
 module "control_provider" {
   source                   = "./modules/infra_provider"
   name                     = "${var.cluster.name}-control_provider"
-  instance_type_moid       = var.control_instance_type.use_existing == true ? data.intersight_kubernetes_virtual_machine_control_instance_type.this.0.results.0.moid : module.control_instance_type.0.moid
+  instance_type_moid       = var.control_instance_type.use_existing == true ? data.intersight_kubernetes_virtual_machine_instance_type.control.0.results.0.moid : module.control_instance_type.0.moid
   node_group_moid          = module.control_profile.node_group_profile_moid
   infra_config_policy_moid = var.infraConfigPolicy.use_existing == true ? data.intersight_kubernetes_virtual_machine_infra_config_policy.this.0.results.0.moid : module.infra_config_policy.0.infra_config_moid
   tags                     = var.tags
@@ -245,7 +245,7 @@ module "control_provider" {
 module "worker_provider" {
   source                   = "./modules/infra_provider"
   name                     = "${var.cluster.name}-worker_provider"
-  instance_type_moid       = var.worker_instance_type.use_existing == true ? data.intersight_kubernetes_virtual_machine_worker_instance_type.this.0.results.0.moid : module.worker_instance_type.0.moid
+  instance_type_moid       = var.worker_instance_type.use_existing == true ? data.intersight_kubernetes_virtual_machine_instance_type.worker.0.results.0.moid : module.worker_instance_type.0.moid
   node_group_moid          = module.worker_profile.node_group_profile_moid
   infra_config_policy_moid = var.infraConfigPolicy.use_existing == true ? data.intersight_kubernetes_virtual_machine_infra_config_policy.this.0.results.0.moid : module.infra_config_policy.0.infra_config_moid
   tags                     = var.tags
